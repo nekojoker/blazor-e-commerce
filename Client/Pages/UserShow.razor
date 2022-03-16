@@ -1,0 +1,52 @@
+﻿@page "/profile"
+@attribute [Authorize]
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<PageTitle>プロフィール</PageTitle>
+
+<BackToTop></BackToTop>
+
+<h2>プロフィール</h2>
+
+@if (shopUser is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label">表示名</label>
+        <div class="col-sm-10">
+            <p class="form-control-plaintext">@shopUser.DisplayName</p>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label">電話番号</label>
+        <div class="col-sm-10">
+            <p class="form-control-plaintext">@shopUser.MobilePhone</p>
+        </div>
+    </div>
+}
+
+<button @onclick=@(() => NavigationManager.NavigateTo($"profile/edit"))
+        class="btn btn-secondary">
+    編集
+</button>
+
+@code {
+    private ShopUser shopUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            shopUser = await UserService.GetMeAsync();
+        }
+        catch (AccessTokenNotAvailableException e)
+        {
+            e.Redirect();
+        }
+    }
+
+}

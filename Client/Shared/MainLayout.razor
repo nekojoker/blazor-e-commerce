@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+
+<div>
+    <main>
+        <nav class="navbar navbar-light" style="background-color: #0078D3;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/" style="color: white;">猫でも買えるECサイト</a>
+                <form class="d-flex gap-2">
+                    <LoginDisplay />
+                    <CartButton />
+                </form>
+            </div>
+            <InfoToast />
+        </nav>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

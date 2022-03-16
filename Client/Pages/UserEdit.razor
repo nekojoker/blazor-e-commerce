@@ -1,0 +1,60 @@
+﻿@page "/profile/edit"
+@attribute [Authorize]
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<PageTitle>プロフィールの編集</PageTitle>
+
+<p><a href="/profile" class="mt-3 mb-3">←プロフィールに戻る</a></p>
+
+<h2>プロフィールの編集</h2>
+
+@if (shopUser is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="@shopUser" OnValidSubmit="@OnValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group mb-3">
+            <label class="col-sm-2 col-form-label mb-2">表示名</label>
+            <InputText class="form-control" @bind-Value="@shopUser.DisplayName"></InputText>
+        </div>
+        <div class="form-group mb-3">
+            <label class="col-sm-2 col-form-label mb-2">電話番号</label>
+            <InputText class="form-control" @bind-Value="@shopUser.MobilePhone"></InputText>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px;">登録</button>
+    </EditForm>
+}
+
+@code {
+    private ShopUser shopUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            shopUser = await UserService.GetMeAsync();
+        }
+        catch (AccessTokenNotAvailableException e)
+        {
+            e.Redirect();
+        }
+    }
+
+    private async void OnValidSubmit()
+    {
+        try
+        {
+            await UserService.PutAsync(shopUser);
+            NavigationManager.NavigateTo("profile");
+        }
+        catch (AccessTokenNotAvailableException e)
+        {
+            e.Redirect();
+        }
+    }
+}

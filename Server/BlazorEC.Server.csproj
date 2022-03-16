@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>BlazorEC.Server-079EC7CB-7D0F-4A05-9312-22B821E2F195</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3" />
+    <PackageReference Include="Microsoft.Graph" Version="4.20.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Stripe.net" Version="39.97.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\BlazorEC.Client.csproj" />
+    <ProjectReference Include="..\Shared\BlazorEC.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.3" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.23.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.23.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Microsoft.EntityFrameworkCore.SqlServer" />
+    <None Remove="Microsoft.EntityFrameworkCore" />
+    <None Remove="Microsoft.EntityFrameworkCore.SqlServer.Design" />
+    <None Remove="Microsoft.Graph" />
+    <None Remove="Extensions\" />
+    <None Remove="Data\" />
+    <None Remove="Services\" />
+    <None Remove="Microsoft.EntityFrameworkCore.Design" />
+    <None Remove="Stripe.net" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Data\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+</Project>

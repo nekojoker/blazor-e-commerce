@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject NavigationManager NavigationManager
+@inject SignOutSessionStateManager SignOutManager
+
+<AuthorizeView>
+    <Authorized>
+        <div class="d-flex align-items-center" style="color: white;">
+            @(context.User.Identity?.Name)さん
+        </div>
+        <div class="dropdown">
+            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="user-icon" style="width: 40px;">
+                    <span class="oi oi-person"></span>
+                </div>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="profile">プロフィール</a></li>
+                <li><a class="dropdown-item" href="orders">注文履歴</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="javascript:void(0)" @onclick="BeginLogout">ログアウト</a></li>
+            </ul>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex align-items-center">
+            <a href="authentication/login" style="color: white; text-decoration: none; ">ログイン</a>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private async Task BeginLogout(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        NavigationManager.NavigateTo("authentication/logout");
+    }
+}

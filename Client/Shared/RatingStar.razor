@@ -1,0 +1,26 @@
+﻿<div class="rating">
+    <div class="rating-upper" style="width: @CalcRatingPercentage()%">
+        <span>★</span>
+        <span>★</span>
+        <span>★</span>
+        <span>★</span>
+        <span>★</span>
+    </div>
+    <div class="rating-lower">
+        <span>★</span>
+        <span>★</span>
+        <span>★</span>
+        <span>★</span>
+        <span>★</span>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public decimal Rating { get; set; }
+
+    private string CalcRatingPercentage()
+        => ((int)((Rating / 5m) * 100)).ToString();
+
+
+}

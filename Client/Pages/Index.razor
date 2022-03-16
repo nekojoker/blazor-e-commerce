@@ -1,0 +1,35 @@
+﻿@page "/"
+@inject IPublicProductService PublicProductService
+
+<PageTitle>トップページ</PageTitle>
+
+@if (products is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        @foreach (var product in products)
+        {
+            <div class="col">
+                <NavLink href=@($"products/{product.Id}") style="color: inherit; text-decoration: none;">
+                    <div class="card h-100">
+                        <img src="@product.ImageUrl" class="card-img-top" style=" height: 200px; object-fit: contain;">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Title</h5>
+                            <p class="fs-5 text-danger">￥@product.UnitPrice.ToString("#,0")</p>
+                        </div>
+                    </div>
+                </NavLink>
+            </div>
+        }
+    </div>
+}
+
+@code{
+    private List<Product> products;
+
+    protected override async Task OnInitializedAsync()
+        => products = await PublicProductService.GetAllAsync();
+}

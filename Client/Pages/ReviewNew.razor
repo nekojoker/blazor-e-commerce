@@ -1,0 +1,14 @@
+﻿@page "/products/{productId:int}/review/new"
+@attribute [Authorize]
+
+<PageTitle>この商品をレビュー</PageTitle>
+
+<p><a href="/orders" class="mt-3 mb-3">←注文履歴に戻る</a></p>
+<h2 class="mb-2">この商品をレビュー</h2>
+
+<ReviewEditor Mode="FormEditMode.New" ProductId="@ProductId"></ReviewEditor>
+
+@code{
+    [Parameter]
+    public int ProductId { get; set; }
+}

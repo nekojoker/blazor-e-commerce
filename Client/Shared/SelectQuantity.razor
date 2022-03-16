@@ -1,0 +1,37 @@
+﻿@inject ICartService CartService
+
+<div class="d-flex flex-row align-items-center mt-3">
+    <span>数量&nbsp;</span>
+    <EditForm Model="@Model">
+        <InputSelect class="form-control" Value="@Model.Quantity" ValueExpression="@(() => Model.Quantity)"
+                     ValueChanged="@((int value) => OnQuantityChanged(value, Model))"
+                     style="width: 50px;">
+            @foreach (int num in Enumerable.Range(1, 9))
+            {
+                <option value="@num">@num</option>
+            }
+        </InputSelect>
+    </EditForm>
+</div>
+
+@code{
+    [Parameter]
+    public Cart Model { get; set; }
+
+    [Parameter]
+    public CartUpdateType CartUpdateType { get; set; }
+
+    [Parameter]
+    public EventCallback QuantityChanged { get; set; }
+
+    private async void OnQuantityChanged(int quantity, Cart cart)
+    {
+        Model.Quantity = quantity;
+        if (CartUpdateType is CartUpdateType.Update)
+        {
+            await CartService.UpdateAsync(cart.ToCartStorage());
+        }
+
+        await QuantityChanged.InvokeAsync();
+    }
+}

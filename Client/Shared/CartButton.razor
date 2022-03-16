@@ -1,0 +1,38 @@
+﻿@inject NavigationManager NavManager
+@inject ICartService CartService
+@inject ICartState CartState
+@implements IDisposable
+
+<button class="btn btn-dark ml-5" @onclick="OnClicked">
+    <i class="oi oi-cart"></i>
+    <span class="badge rounded-pill bg-warning">@cartCount</span>
+</button>
+
+@code{
+    private int cartCount;
+
+    private void OnClicked()
+        => NavManager.NavigateTo("cart");
+
+    protected override async Task OnInitializedAsync()
+    {
+        cartCount = await GetCartCount();
+        CartState.OnQuantityChanged += OnCountChanged;
+    }
+
+    private async ValueTask<int> GetCartCount()
+    {
+        var carts = await CartService.GetAllAsync();
+        return carts.Count();
+    }
+
+    private void OnCountChanged(int count)
+    {
+        cartCount = count;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+        => CartState.OnQuantityChanged -= OnCountChanged;
+    
+}

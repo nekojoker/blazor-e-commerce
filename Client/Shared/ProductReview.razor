@@ -1,0 +1,108 @@
+﻿@inject IPublicReviewService PublicReviewService
+@inject AuthenticationStateProvider AuthProvider
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@inject IReviewService ReviewService
+
+<div class="container mx-auto">
+    <div class="row mx-auto mb-3 col-md-6">
+        @if (reviews is null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else if (reviews.Count == 0)
+        {
+            <p>まだカスタマーレビューはありません。</p>
+        }
+        else
+        {
+            @foreach (var review in reviews)
+            {
+                <div class="row">
+                    <div class="col-2 mb-1 user-icon" style="width: 40px;">
+                        <span class="oi oi-person"></span>
+                    </div>
+                    <div class="col-9 d-flex align-items-left ml-3 mb-2">
+                        <strong>匿名ユーザー</strong>
+                    </div>
+
+                    @if (userId == review.UserId)
+                    {
+                        <div class="dropdown col-1">
+                            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="oi oi-ellipses"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <li><a class="dropdown-item" href=@($"/products/{ProductId}/review/{review.Id}/update")>編集する</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"
+                                       @onclick="@(() => DeleteReview(review))" style="color: red;">削除する</a></li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+                <div class="row">
+                    <div class="col-3 mb-1">
+                        <RatingStar Rating="@review.Rating"></RatingStar>
+                    </div>
+                    <div class="col-9 d-flex align-items-left ml-3 mb-2">
+                        <strong>@review.Title</strong>
+                    </div>
+                </div>
+                <div class="text-muted fs-6 mb-2">@(review.CreateDate.ToString("yyyy年M月d日"))にレビュー済み</div>
+                <div class="mb-2">
+                    @review.ReviewText
+                </div>
+                <div class="text-muted fs-6 mb-2">0人のお客様がこれが役に立ったと考えています</div>
+                <button class="btn btn-light mb-5" style="width: 150px;">役に立った</button>
+            }
+        }
+    </div>
+</div>
+
+
+@code{
+    [Parameter]
+    public int ProductId { get; set; }
+
+    [Parameter]
+    public EventCallback<ReviewAverageCalculatedEventArgs> OnReviewAverageCalculated { get; set; }
+
+    private Guid userId;
+    private List<Review> reviews = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        reviews = await PublicReviewService.FilterByProductIdAsync(ProductId);
+        await InvokeReviewAverageCalculatedEvent();
+
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        if (Guid.TryParse(authState.User.Claims.FirstOrDefault(x => x.Type == "oid")?.Value, out Guid value))
+        {
+            userId = value;
+        }
+    }
+
+    private async void DeleteReview(Review review)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "本当にレビューを削除しますか？");
+        if (confirmed)
+        {
+            await ReviewService.DeleteAsync(review.Id);
+            await JSRuntime.InvokeVoidAsync("showInfoToast", "レビューを削除しました。");
+
+            reviews = await PublicReviewService.FilterByProductIdAsync(ProductId);
+            await InvokeReviewAverageCalculatedEvent();
+        }
+    }
+
+    private async ValueTask InvokeReviewAverageCalculatedEvent()
+    {
+        var args = new ReviewAverageCalculatedEventArgs
+        {
+            ReviewAverage = reviews.Count == 0 ? 0 : (decimal)reviews.Average(x => x.Rating),
+            ReviewCount = reviews.Count()
+        };
+
+        await OnReviewAverageCalculated.InvokeAsync(args);
+    }
+}

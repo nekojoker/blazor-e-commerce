@@ -1,0 +1,97 @@
+﻿@page "/cart"
+@inject ICartService CartService
+@inject IPaymentService PaymentService
+@inject NavigationManager NavigationManager
+
+<PageTitle>ショッピングカート</PageTitle>
+
+<BackToTop></BackToTop>
+
+@if (carts is null)
+{
+    <h2>ショッピングカート</h2>
+    <p><em>Loading...</em></p>
+}
+else if (carts.Count == 0)
+{
+    <h2>カートに商品はありません。</h2>
+}
+else
+{
+    <h2>ショッピングカート</h2>
+
+    <div class="row">
+        <div class="col-sm-9">
+            <hr />
+            @foreach (var cart in carts)
+            {
+                <div class="row">
+                    <img src="@cart.Product.ImageUrl" class="col-sm-2" style=" height: 150px; object-fit: contain;">
+                    <div class="col-sm-8">
+                        <h4>@cart.Product.Title</h4>
+                        <SelectQuantity Model="@cart" CartUpdateType="CartUpdateType.Update" QuantityChanged="() => StateHasChanged()" />
+                        <div class="d-flex flex-row align-items-center mt-3">
+                            <i class="oi oi-trash"></i>
+                            <a href="javascript:void(0)" @onclick="@(() => RemoveCart(cart))">削除</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <h4>￥@cart.Product.UnitPrice.ToString("#,0")</h4>
+                    </div>
+                </div>
+                <hr />
+            }
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-subtitle mb-2">合計 @(CalcTotalQuantity()) 個の商品（税込）</h5>
+                    <h4 class="card-title text-danger">￥@CalcTotalAmount().ToString("#,0")</h4>
+                    <div class="d-grid gap-2 mx-auto">
+                        <button class="btn btn-warning" @onclick="GoToPayment" disabled="@buttonDisabled">レジに進む</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Cart> carts;
+    private bool buttonDisabled;
+
+    protected override async Task OnInitializedAsync()
+        => carts = await CartService.GetAllAsync();
+
+    private decimal CalcTotalAmount()
+        => carts.Sum(x => x.CalcAmount());
+
+    private int CalcTotalQuantity()
+        => carts.Sum(x => x.Quantity);
+
+    private async void RemoveCart(Cart cart)
+    {
+        await CartService.RemoveAsync(cart.Product.Id);
+        carts = await CartService.GetAllAsync();
+        StateHasChanged();
+    }
+
+    private async void GoToPayment()
+    {
+        try
+        {
+            buttonDisabled = true;
+
+            var checkoutUrl = await PaymentService.GetCheckoutUrlAsync(carts);
+            NavigationManager.NavigateTo(checkoutUrl);
+        }
+        catch (AccessTokenNotAvailableException e)
+        {
+            e.Redirect();
+        }
+        finally
+        {
+            buttonDisabled = false;
+        }
+    }
+}

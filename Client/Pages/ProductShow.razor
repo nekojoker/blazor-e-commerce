@@ -1,0 +1,74 @@
+﻿@page "/products/{id:int}"
+@inject IPublicProductService PublicProductService
+@inject ICartService CartService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>商品詳細 - @product?.Title</PageTitle>
+
+<BackToTop></BackToTop>
+
+@if (product is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <img src="@product.ImageUrl" class="col-sm-3" style=" height: 300px; object-fit: contain;">
+        <div class="col-sm-6">
+            <h2>@product.Title</h2>
+            <div class="row">
+                <div class="col-3 mb-1">
+                    <RatingStar Rating="@reviewAverage"></RatingStar>
+                </div>
+                <div class="col-9 d-flex align-items-left ml-3 mb-2">
+                    @(reviewCount)件の評価
+                </div>
+            </div>
+            <p>@product.Description</p>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-danger">￥@product.UnitPrice.ToString("#,0")</h4>
+                    <h6 class="card-subtitle mb-2 text-muted">本商品はダウンロードコンテンツです。</h6>
+                    <SelectQuantity Model="@cart" CartUpdateType="CartUpdateType.Add" />
+                    <div class="d-grid gap-2 mx-auto mt-3">
+                        <button class="btn btn-warning" @onclick="AddToCart">カートに入れる</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <h3 class="text-center mb-5">カスタマーレビュー</h3>
+    <ProductReview ProductId="@Id" OnReviewAverageCalculated="@OnReviewAverageCalculated"></ProductReview>
+}
+
+@code{
+    [Parameter]
+    public int Id { get; set; }
+
+    private decimal reviewAverage;
+    private int reviewCount;
+    private Product product;
+    private Cart cart;
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await PublicProductService.GetAsync(Id);
+        cart = new Cart() { Quantity = 1, Product = product };
+    }
+
+    private async void AddToCart()
+    {
+        await CartService.AddAsync(cart.ToCartStorage());
+        await JSRuntime.InvokeVoidAsync("showInfoToast", "カートに追加しました。");
+    }
+
+    private void OnReviewAverageCalculated(ReviewAverageCalculatedEventArgs args)
+    {
+        reviewCount = args.ReviewCount;
+        reviewAverage = args.ReviewAverage;
+    }
+}

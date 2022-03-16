@@ -1,0 +1,101 @@
+﻿@inject NavigationManager NavigationManager
+@inject IPublicProductService PublicProductService
+@inject IReviewService ReviewService
+@inject IPublicReviewService PublicReviewService
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthProvider
+
+<div class="row mb-3">
+    <img src="@product.ImageUrl" style=" height: 100px; width:100px; object-fit: contain;">
+    @product.Title
+</div>
+
+@if (Mode == FormEditMode.Update && review.Id == 0)
+{
+    <p><em>Loading...</em></p>
+}
+else if (Mode == FormEditMode.Update && !isMyReview)
+{
+    <p>対象のレビューは見つかりませんでした。</p>
+}
+else
+{
+    <EditForm Model="@review" OnValidSubmit="@(() => Mode == FormEditMode.New ? Post() : Put())">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+        <div class="form-group mb-3">
+            <label class="mb-2">総合評価</label>
+            <RatingStar Rating="@review.Rating"></RatingStar>
+            <InputSelect class="form-control" Value="@review.Rating" ValueExpression="@(() => review.Rating)"
+                         ValueChanged="@((int value) => OnQuantityChanged(value))" style="width: 50px;">
+                @foreach (int value in Enumerable.Range(1, 5))
+                {
+                    <option value="@value">@value</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="form-group mb-3" style="width: 70%;">
+            <label class="mb-2">レビュータイトル</label>
+            <InputText class="form-control" @bind-Value="@review.Title"></InputText>
+        </div>
+        <div class="form-group mb-3">
+            <label class="mb-2">レビューを追加</label>
+            <InputTextArea class="form-control" @bind-Value="@review.ReviewText" style="width: 70%;"></InputTextArea>
+        </div>
+        <button type="submit" class="btn btn-primary mb-3">投稿</button>
+    </EditForm>
+}
+
+@code{
+    [Parameter]
+    public int ProductId { get; set; }
+
+    [Parameter]
+    public int ReviewId { get; set; }
+
+    [Parameter]
+    public FormEditMode Mode { get; set; }
+
+    private Review review = new();
+    private Product product = new();
+    private bool isMyReview;
+
+    private void OnQuantityChanged(int rating)
+        => review.Rating = rating;
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await PublicProductService.GetAsync(ProductId);
+        review.ProductId = product.Id;
+
+        if (Mode == FormEditMode.Update)
+        {
+            review = await PublicReviewService.GetAsync(ReviewId);
+            isMyReview = await IsMyReview(review.UserId);
+        }
+    }
+
+    private async Task Post()
+    {
+        await ReviewService.PostAsync(review);
+        NavigationManager.NavigateTo($"/products/{review.ProductId}");
+        await JSRuntime.InvokeVoidAsync("showInfoToast", "レビューを投稿しました。");
+    }
+
+    private async Task Put()
+    {
+        await ReviewService.PutAsync(review);
+        NavigationManager.NavigateTo($"/products/{review.ProductId}");
+        await JSRuntime.InvokeVoidAsync("showInfoToast", "レビューを修正しました。");
+    }
+
+    private async Task<bool> IsMyReview(Guid reviewUserId)
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        if (Guid.TryParse(authState.User.Claims.FirstOrDefault(x => x.Type == "oid")?.Value, out Guid value))
+        {
+            return reviewUserId == value;
+        }
+        return false;
+    }
+}

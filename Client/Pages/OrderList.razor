@@ -1,0 +1,72 @@
+﻿@page "/orders"
+@inject IOrderService OrderService
+@attribute [Authorize]
+@inject NavigationManager NavigationManager
+
+<PageTitle>注文履歴</PageTitle>
+
+<BackToTop></BackToTop>
+
+@if (orders is null)
+{
+    <h2>注文履歴</h2>
+    <p><em>Loading...</em></p>
+}
+else if (orders.Count == 0)
+{
+    <h2>注文履歴はありません。</h2>
+}
+else
+{
+    <h2>注文履歴</h2>
+    @foreach (var order in orders)
+    {
+        <div class="row mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            注文日<br />@order.CreateDate.ToString("yyyy年M月d日")
+                        </div>
+                        <div class="col-sm-2">
+                            合計<br />￥@order.Amount.ToString("#,0")
+                        </div>
+                        <div class="col-sm-8">
+                            注文番号<br />@order.StripePeymentId
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @foreach (var particular in @order.OrderParticulars)
+                    {
+                        <div class="row mb-2">
+                            <div class="col-sm-2">
+                                <img src="@particular.Product.ImageUrl" class="col-sm-3"
+                                     style=" height: 100px; width:100px; object-fit: contain;">
+                            </div>
+                            <div class="col-sm-6">
+                                <a href=@($"products/{particular.ProductId}")>@particular.Product.Title</a>
+                                <p>数量&nbsp;@particular.Quantity</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btn-outline-secondary"
+                                        @onclick="@(() => WriteReview(particular))">商品レビューを書く</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private List<Order> orders;
+
+    protected override async Task OnInitializedAsync()
+        => orders = await OrderService.GetAllAsync();
+
+    private void WriteReview(OrderParticular particular)
+        => NavigationManager.NavigateTo($"/products/{particular.ProductId}/review/new");
+
+}
