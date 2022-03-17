@@ -16,7 +16,7 @@ https://youtu.be/g3i_23BQEI4
 
 ## 使用されている主な技術やツール
 
-- ASP.NET Core Blazor
+- ASP.NET Core Blazor WebAssembly
 - Entity Framework
 - Azure Active Directory B2C
 - Microsoft Graph
