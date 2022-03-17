@@ -1,6 +1,8 @@
 # blazor-e-commerce
  
-本リポジトリは、Blazor で作成した E コマースサイトのサンプルプログラムです。
+本リポジトリは、Blazor で作成した E コマースサイトのサンプルプログラムです。  
+動作イメージは以下の動画で確認できます。  
+https://youtu.be/g3i_23BQEI4
 
 ## 実装されている機能
 
@@ -52,6 +54,18 @@
 
 Azure 関連は[こちら](https://blazor-master.com/azure-active-directory-b2c/)、Stripe 関連は[こちら](https://blazor-master.com/stripe/)でもう少し詳しく解説しています。  
 何の値を設定すべきか不明な場合は、公式ドキュメントもあわせて参照してください。
+
+## 実行
+
+以下のコマンドを使用してデータベースを更新したあと、デバッグ実行します。
+
+```
+// dotnet コマンドをインストールしていない人のみ
+dotnet tool install --global dotnet-ef
+
+// データベースの更新
+dotnet ef database update
+```
 
 ## 作成者情報
 
