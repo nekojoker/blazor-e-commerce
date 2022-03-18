@@ -2,6 +2,7 @@
 @inject ICartService CartService
 @inject IPaymentService PaymentService
 @inject NavigationManager NavigationManager
+@inject ICartState CartState
 
 <PageTitle>ショッピングカート</PageTitle>
 
@@ -61,7 +62,10 @@ else
     private bool buttonDisabled;
 
     protected override async Task OnInitializedAsync()
-        => carts = await CartService.GetAllAsync();
+    {
+        carts = await CartService.GetAllAsync();
+        await CartState.UpdateAsync();
+    }
 
     private decimal CalcTotalAmount()
         => carts.Sum(x => x.CalcAmount());

@@ -40,7 +40,7 @@ public class CartService : ICartService
         {
             storages.Add(cart);
             await storageService.SetItemAsync(CART, storages);
-            await cartState.Update();
+            await cartState.UpdateAsync();
             return;
         }
 
@@ -60,7 +60,7 @@ public class CartService : ICartService
         }
 
         await storageService.SetItemAsync(CART, storages);
-        await cartState.Update();
+        await cartState.UpdateAsync();
     }
 
     public async ValueTask AddAsync(CartStorage cart)

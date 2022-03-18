@@ -7,7 +7,7 @@ namespace BlazorEC.Client.State;
 
 public interface ICartState
 {
-    ValueTask Update();
+    ValueTask UpdateAsync();
     event Action<int> OnQuantityChanged;
 }
 
@@ -20,7 +20,7 @@ public class CartState : ICartState
     public CartState(ILocalStorageService storageService)
         => this.storageService = storageService;
 
-    public async ValueTask Update()
+    public async ValueTask UpdateAsync()
     {
         var carts = await storageService.GetItemAsync<List<CartStorage>>("cart");
         int count = carts is null
