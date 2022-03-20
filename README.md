@@ -22,6 +22,7 @@ https://youtu.be/g3i_23BQEI4
 - Microsoft Graph
 - Local Storage
 - Stripe (.NET, Webhook)
+- Swagger
 
 ## 事前準備
 
@@ -51,6 +52,8 @@ https://youtu.be/g3i_23BQEI4
 |Stripe:ApiKey|Stripe の API キー|
 |Stripe:WebhookSecret|Stripe の Webhook シークレット|
 |ConnectionStrings:DefaultConnection|SQL Server の接続文字列|
+|Swagger:ClientId|Azure AD B2C の Swagger 用アプリのクライアント ID|
+|Swagger:Scopes|Azure AD B2C の Swagger 用アプリのスコープ名|
 
 Azure 関連は[こちら](https://blazor-master.com/azure-active-directory-b2c/)、Stripe 関連は[こちら](https://blazor-master.com/stripe/)でもう少し詳しく解説しています。  
 何の値を設定すべきか不明な場合は、公式ドキュメントもあわせて参照してください。
@@ -65,6 +68,13 @@ dotnet tool install --global dotnet-ef
 
 // データベースの更新
 dotnet ef database update
+```
+## Swagger の起動
+
+デバッグ実行後、以下の URL から Swagger を起動できます。
+
+```
+https://localhost:7030/swagger/index.html
 ```
 
 ## 作成者情報
