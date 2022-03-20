@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BlazorEC.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
@@ -9,17 +6,15 @@ using Stripe;
 namespace BlazorEC.Server.Controllers;
 
 [Route("api/[controller]")]
-public class StripeWebhookController : Controller
+[ApiExplorerSettings(IgnoreApi = true)]
+public class StripeWebhookController : ControllerBase
 {
     private readonly IOrderService orderService;
-    private readonly ILogger<StripeWebhookController> logger;
     private readonly IConfiguration configuration;
 
-    public StripeWebhookController(ILogger<StripeWebhookController> logger,
-        IOrderService orderService, IConfiguration configuration)
+    public StripeWebhookController(IOrderService orderService, IConfiguration configuration)
     {
         this.orderService = orderService;
-        this.logger = logger;
         this.configuration = configuration;
     }
 
@@ -40,8 +35,7 @@ public class StripeWebhookController : Controller
             if (stripeEvent.Type == Events.CheckoutSessionCompleted)
             {
                 var session = stripeEvent.Data.Object as Stripe.Checkout.Session;
-                
-                await FulfillOrder(session);
+                await orderService.InsertAsync(session);
             }
 
             return Ok();
@@ -51,9 +45,6 @@ public class StripeWebhookController : Controller
             return BadRequest(e);
         }
     }
-
-    private async ValueTask FulfillOrder(Stripe.Checkout.Session session)
-        => await orderService.InsertAsync(session);  
 
 }
 

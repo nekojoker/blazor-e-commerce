@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using System.Security.Claims;
 using BlazorEC.Shared.Entities;
 using BlazorEC.Server.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BlazorEC.Server.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
@@ -36,16 +35,21 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("me")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async ValueTask<ActionResult<ShopUser>> GetMe()
     {
         string userId = GetUserId();
-        var user = await graphClient.Users[userId].Request()
-                         .GetAsync();
+        var user = await graphClient.Users[userId].Request().GetAsync();
 
         return Ok(user.ToShopUser());
     }
 
     [HttpPut]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async ValueTask<IActionResult> Put(ShopUser shopUser)
     {
         string userId = GetUserId();
@@ -56,10 +60,9 @@ public class UserController : ControllerBase
             MobilePhone = shopUser.MobilePhone
         };
 
-        var result = await graphClient.Users[userId].Request()
-                           .UpdateAsync(user);
+        await graphClient.Users[userId].Request().UpdateAsync(user);
 
-        return Ok(result);
+        return NoContent();
     }
 
     private string GetUserId()

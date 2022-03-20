@@ -16,6 +16,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Stripe.net" Version="39.97.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +41,10 @@
     <None Remove="Services\" />
     <None Remove="Microsoft.EntityFrameworkCore.Design" />
     <None Remove="Stripe.net" />
+    <None Remove="Swashbuckle.AspNetCore" />
+    <None Remove="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" />
+    <None Remove="Microsoft.AspNetCore.Authentication" />
+    <None Remove="NSwag.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />

@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using BlazorEC.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stripe;
 using Stripe.Checkout;
 
 namespace BlazorEC.Server.Controllers;
@@ -14,9 +12,10 @@ namespace BlazorEC.Server.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class PaymentsController : Controller
+public class PaymentsController : ControllerBase
 {
     [HttpPost("create-checkout-session")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<string> CreateCheckoutSession([FromBody] List<Cart> carts)
     {
         var lineItems = new List<SessionLineItemOptions>();
@@ -50,8 +49,8 @@ public class PaymentsController : Controller
         {
             LineItems = lineItems,
             Mode = "payment",
-            SuccessUrl = $"{GetBaseUrl()}/payment-success",
-            CancelUrl = $"{GetBaseUrl()}/payment-cancel",
+            SuccessUrl = $"https://localhost:7030/payment-success",
+            CancelUrl = $"https://localhost:7030/payment-cancel",
             Metadata = new Dictionary<string, string>
             {
                 ["userId"] = GetUserId()
@@ -60,15 +59,12 @@ public class PaymentsController : Controller
 
         var service = new SessionService();
         Session session = service.Create(options);
-        
+
         return Ok(session.Url);
     }
 
-    public string GetBaseUrl()
-        => $"{Request.Scheme}://{Request.Host}";
-
     private string GetUserId()
         => User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-    
+
 }
 
