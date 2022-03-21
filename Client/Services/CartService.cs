@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http.Json;
 using BlazorEC.Client.State;
 using BlazorEC.Shared.Entities;
 using Blazored.LocalStorage;
@@ -11,6 +10,7 @@ public interface ICartService
     ValueTask UpdateAsync(CartStorage cartStorage);
     ValueTask AddAsync(CartStorage cartStorage);
     ValueTask RemoveAsync(int productId);
+    ValueTask RemoveAllAsync();
     ValueTask<List<Cart>> GetAllAsync();
 }
 
@@ -66,14 +66,17 @@ public class CartService : ICartService
     public async ValueTask AddAsync(CartStorage cart)
         => await UpdateCartStorage(cart, CartStorageType.Add);
 
-
     public async ValueTask UpdateAsync(CartStorage cart)
         => await UpdateCartStorage(cart, CartStorageType.Update);
-
 
     public async ValueTask RemoveAsync(int productId)
         => await UpdateCartStorage(new CartStorage { ProductId = productId }, CartStorageType.Remove);
 
+    public async ValueTask RemoveAllAsync()
+    {
+        await storageService.RemoveItemAsync(CART);
+        await cartState.UpdateAsync();
+    }
 
     public async ValueTask<List<Cart>> GetAllAsync()
     {

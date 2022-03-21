@@ -1,16 +1,16 @@
 ﻿@page "/payment-success"
-@inject IOrderService OrderService
+@inject ICartService CartService
+@inject NavigationManager NavigationManager
 
-<PageTitle>ご購入ありがとうございました！</PageTitle>
+<PageTitle>購入処理中...</PageTitle>
 
-<h2 style="color: #077D61;">
-    <span class="oi oi-circle-check"></span>
-    ご購入ありがとうございました！
-</h2>
-<p>注文履歴は<a href="orders">こちら</a>からご確認いただけます。</p>
-
-<BackToTop></BackToTop>
+<p><em>Loading...</em></p>
 
 @code {
 
+    protected override async Task OnInitializedAsync()
+    {
+        await CartService.RemoveAllAsync();
+        NavigationManager.NavigateTo("payment-thanks", true);
+    }
 }
