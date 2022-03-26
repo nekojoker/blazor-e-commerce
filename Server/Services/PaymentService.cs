@@ -44,8 +44,8 @@ public class PaymentService : IPaymentService
         {
             LineItems = lineItems,
             Mode = "payment",
-            SuccessUrl = $"https://localhost:7030/payment-success",
-            CancelUrl = $"https://localhost:7030/payment-cancel",
+            SuccessUrl = $"https://localhost:5001/payment-success",
+            CancelUrl = $"https://localhost:5001/payment-cancel",
             Metadata = new Dictionary<string, string>
             {
                 ["userId"] = userId
