@@ -74,7 +74,7 @@ dotnet ef database update
 デバッグ実行後、以下の URL から Swagger を起動できます。
 
 ```
-https://localhost:7030/swagger/index.html
+https://localhost:5001/swagger/index.html
 ```
 
 ## 作成者情報
