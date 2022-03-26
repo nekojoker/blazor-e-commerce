@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Net.Http.Json;
 using BlazorEC.Client.Util;
 using BlazorEC.Shared.Entities;
+using BlazorEC.Client.Extensions;
 
 namespace BlazorEC.Client.Services;
 
@@ -21,10 +21,20 @@ public class PublicProductService : IPublicProductService
         => this.httpClient = client.Http;
 
     public async ValueTask<List<Product>> GetAllAsync()
-        => await httpClient.GetFromJsonAsync<List<Product>>("api/product");
+    {
+        var response = await httpClient.GetAsync("api/product");
+        await response.HandleError();
+
+        return await response.Content.ReadFromJsonAsync<List<Product>>();
+    } 
 
     public async ValueTask<Product> GetAsync(int id)
-        => await httpClient.GetFromJsonAsync<Product>($"api/product/{id}");
+    {
+        var response = await httpClient.GetAsync($"api/product/{id}");
+        await response.HandleError();
+
+        return await response.Content.ReadFromJsonAsync<Product>();
+    }
 
     public async ValueTask<List<Product>> FilterAllByIdsAsync(int[] ids)
     {
@@ -34,7 +44,10 @@ public class PublicProductService : IPublicProductService
             query.Add("ids", id.ToString());
         }
 
-        return await httpClient.GetFromJsonAsync<List<Product>>($"api/product/filter/ids?{query.ToString()}");
+        var response = await httpClient.GetAsync($"api/product/filter/ids?{query}");
+        await response.HandleError();
+
+        return await response.Content.ReadFromJsonAsync<List<Product>>();
     }
 }
 

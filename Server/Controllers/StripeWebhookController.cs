@@ -42,7 +42,7 @@ public class StripeWebhookController : ControllerBase
         }
         catch (StripeException e)
         {
-            return BadRequest(e);
+            return BadRequest(e.Message);
         }
     }
 

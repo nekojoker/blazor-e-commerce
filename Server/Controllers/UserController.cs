@@ -1,11 +1,10 @@
 ﻿using System;
-using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph;
 using System.Security.Claims;
 using BlazorEC.Shared.Entities;
-using BlazorEC.Server.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Mime;
+using BlazorEC.Server.Services;
 
 namespace BlazorEC.Server.Controllers;
 
@@ -14,54 +13,28 @@ namespace BlazorEC.Server.Controllers;
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly GraphServiceClient graphClient;
+    private readonly IUserService userService;
 
-    public UserController(IConfiguration configuration)
-    {
-        var scopes = new[] { "https://graph.microsoft.com/.default" };
-
-        var options = new TokenCredentialOptions
-        {
-            AuthorityHost = AzureAuthorityHosts.AzurePublicCloud
-        };
-
-        var clientSecretCredential = new ClientSecretCredential(
-            configuration["AzureAdB2C:TenantId"],
-            configuration["AzureAdB2C:ClientId"],
-            configuration["AzureAdB2C:ClientSecret"],
-            options);
-
-        graphClient = new GraphServiceClient(clientSecretCredential, scopes);
-    }
+    public UserController(IUserService userService)
+        => this.userService = userService;
 
     [HttpGet("me")]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async ValueTask<ActionResult<ShopUser>> GetMe()
     {
-        string userId = GetUserId();
-        var user = await graphClient.Users[userId].Request().GetAsync();
-
-        return Ok(user.ToShopUser());
+        var shopUser = await userService.GetAsync(GetUserId());
+        return Ok(shopUser);
     }
 
     [HttpPut]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async ValueTask<IActionResult> Put(ShopUser shopUser)
+    public async ValueTask<ActionResult> Put(ShopUser shopUser)
     {
-        string userId = GetUserId();
-
-        var user = new User
-        {
-            DisplayName = shopUser.DisplayName,
-            MobilePhone = shopUser.MobilePhone
-        };
-
-        await graphClient.Users[userId].Request().UpdateAsync(user);
-
+        await userService.PutAsync(shopUser, GetUserId());
         return NoContent();
     }
 

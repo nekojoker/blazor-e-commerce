@@ -4,6 +4,7 @@ using System.Security.Claims;
 using BlazorEC.Shared.Entities;
 using BlazorEC.Server.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Mime;
 
 namespace BlazorEC.Server.Controllers;
 
@@ -18,23 +19,28 @@ public class ReviewController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("{id}")]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async ValueTask<ActionResult<Review>> Get(int id)
-        => Ok(await reviewService.GetAsync(id));
+    {
+        var review = await reviewService.GetAsync(id);
+        if(review is null)
+            return NotFound("レビューが見つかりませんでした。");
+        
+        return Ok(review);
+    }
 
     [AllowAnonymous]
     [HttpGet("filter/{productId}")]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async ValueTask<ActionResult<List<Review>>> FilterByProductIdAsync(int productId)
         => Ok(await reviewService.FilterByProductIdAsync(productId));
 
     [Authorize]
     [HttpPost]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async ValueTask<ActionResult<int>> Post(Review review)
@@ -42,26 +48,40 @@ public class ReviewController : ControllerBase
 
     [Authorize]
     [HttpPut]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async ValueTask<ActionResult> Put(Review review)
     {
-        await reviewService.PutAsync(review, GetUserId());
-        return NoContent();
+        var statusCode = await reviewService.PutAsync(review, GetUserId());
+
+        return statusCode switch
+        {
+            StatusCodes.Status400BadRequest => BadRequest(),
+            StatusCodes.Status404NotFound => NotFound("レビューが見つかりませんでした。"),
+            _ => NoContent()
+        };
     }
 
     [Authorize]
     [HttpDelete("{id}")]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async ValueTask<ActionResult> Delete(int id)
     {
-        await reviewService.DeleteAsync(id, GetUserId());
-        return NoContent();
+        var statusCode = await reviewService.DeleteAsync(id, GetUserId());
+
+        return statusCode switch
+        {
+            StatusCodes.Status400BadRequest => BadRequest(),
+            StatusCodes.Status404NotFound => NotFound("レビューが見つかりませんでした。"),
+            _ => NoContent()
+        };
     }
 
     private Guid GetUserId()

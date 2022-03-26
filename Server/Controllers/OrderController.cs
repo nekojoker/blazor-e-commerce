@@ -4,6 +4,7 @@ using System.Security.Claims;
 using BlazorEC.Shared.Entities;
 using BlazorEC.Server.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Mime;
 
 namespace BlazorEC.Server.Controllers;
 
@@ -17,19 +18,10 @@ public class OrderController : ControllerBase
     public OrderController(IOrderService orderService)
         => this.orderService = orderService;
 
-    [HttpGet("{orderId}")]
-    [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async ValueTask<ActionResult<Order>> Get(int orderId)
-        => Ok(await orderService.GetAsync(orderId, GetUserId()));
-
     [HttpGet]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async ValueTask<ActionResult<List<Order>>> GetAll()
         => Ok(await orderService.GetAllAsync(GetUserId()));
 

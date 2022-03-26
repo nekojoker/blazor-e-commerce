@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Net.Http.Json;
-using BlazorEC.Client.Util;
+using BlazorEC.Client.Extensions;
 using BlazorEC.Shared.Entities;
 
 namespace BlazorEC.Client.Services;
@@ -9,8 +8,8 @@ namespace BlazorEC.Client.Services;
 public interface IReviewService
 {
     ValueTask<int> PostAsync(Review review);
-    ValueTask<HttpResponseMessage> PutAsync(Review review);
-    ValueTask<HttpResponseMessage> DeleteAsync(int id);
+    ValueTask PutAsync(Review review);
+    ValueTask DeleteAsync(int id);
 }
 
 public class ReviewService : IReviewService
@@ -27,10 +26,16 @@ public class ReviewService : IReviewService
         return int.Parse(id);
     }
 
-    public async ValueTask<HttpResponseMessage> PutAsync(Review review)
-        => await httpClient.PutAsJsonAsync($"api/review", review);
+    public async ValueTask PutAsync(Review review)
+    {
+        var response = await httpClient.PutAsJsonAsync($"api/review", review);
+        await response.HandleError();
+    }
 
-    public async ValueTask<HttpResponseMessage> DeleteAsync(int id)
-        => await httpClient.DeleteAsync($"api/review/{id}");
+    public async ValueTask DeleteAsync(int id)
+    {
+        var response = await httpClient.DeleteAsync($"api/review/{id}");
+        await response.HandleError();
+    }
 }
 

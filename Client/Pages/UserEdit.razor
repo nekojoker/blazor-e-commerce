@@ -35,26 +35,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            shopUser = await UserService.GetMeAsync();
-        }
-        catch (AccessTokenNotAvailableException e)
-        {
-            e.Redirect();
-        }
+        shopUser = await UserService.GetMeAsync();
     }
 
     private async void OnValidSubmit()
     {
-        try
-        {
-            await UserService.PutAsync(shopUser);
-            NavigationManager.NavigateTo("profile");
-        }
-        catch (AccessTokenNotAvailableException e)
-        {
-            e.Redirect();
-        }
+        await UserService.PutAsync(shopUser);
+        NavigationManager.NavigateTo("profile");
     }
 }

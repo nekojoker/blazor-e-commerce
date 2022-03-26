@@ -1,0 +1,14 @@
+﻿<h2>400</h2>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <p>@Message</p>
+}
+
+<p>不正なリクエストを検知しました。もう一度最初からやり直してください。</p>
+
+@code{
+    [Parameter]
+    public string Message { get; set; }
+
+}

@@ -1,0 +1,36 @@
+﻿<div class="ms-3 mt-2">
+    @if (statusCode == 400)
+    {
+        <_400 Message="@message"></_400>
+    }
+    else if (statusCode == 404)
+    {
+        <_404 Message="@message"></_404>
+    }
+    else
+    {
+        <_500></_500>
+    }
+</div>
+
+@code{
+    [Parameter]
+    public Exception Exception { get; set; }
+
+    private int statusCode;
+    private string message;
+
+    protected override void OnParametersSet()
+    {
+        if (Exception.Data.Count > 0)
+        {
+            statusCode = Exception.Data.Keys.Cast<int>().FirstOrDefault();
+            message = Exception.Data[statusCode].ToString();
+        }
+        else
+        {
+            statusCode = 500;
+            message = Exception.Message;
+        }
+    }
+}

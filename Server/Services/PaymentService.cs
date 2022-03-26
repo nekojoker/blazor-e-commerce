@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using BlazorEC.Shared.Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 
-namespace BlazorEC.Server.Controllers;
+namespace BlazorEC.Server.Services;
 
-[Authorize]
-[ApiController]
-[Route("api/[controller]")]
-public class PaymentsController : ControllerBase
+public interface IPaymentService
 {
-    [HttpPost("create-checkout-session")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<string> CreateCheckoutSession([FromBody] List<Cart> carts)
+    ValueTask<string> CreateCheckoutSessionAsync(List<Cart> carts, string userId);
+}
+
+public class PaymentService : IPaymentService
+{
+    public async ValueTask<string> CreateCheckoutSessionAsync(List<Cart> carts, string userId)
     {
         var lineItems = new List<SessionLineItemOptions>();
         foreach (var cart in carts)
@@ -53,18 +48,16 @@ public class PaymentsController : ControllerBase
             CancelUrl = $"https://localhost:7030/payment-cancel",
             Metadata = new Dictionary<string, string>
             {
-                ["userId"] = GetUserId()
+                ["userId"] = userId
             }
         };
 
         var service = new SessionService();
-        Session session = service.Create(options);
+        Session session = await service.CreateAsync(options);
 
-        return Ok(session.Url);
+        return session.Url;
     }
 
-    private string GetUserId()
-        => User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
 }
 

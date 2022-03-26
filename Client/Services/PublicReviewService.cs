@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Net.Http.Json;
+using BlazorEC.Client.Extensions;
 using BlazorEC.Client.Util;
 using BlazorEC.Shared.Entities;
 
@@ -20,10 +20,20 @@ public class PublicReviewService : IPublicReviewService
         => this.httpClient = publicHttpClient.Http;
 
     public async ValueTask<List<Review>> FilterByProductIdAsync(int productId)
-        => await httpClient.GetFromJsonAsync<List<Review>>($"api/review/filter/{productId}");
+    {
+        var response = await httpClient.GetAsync($"api/review/filter/{productId}");
+        await response.HandleError();
+
+        return await response.Content.ReadFromJsonAsync<List<Review>>();
+    }
 
     public async ValueTask<Review> GetAsync(int id)
-        => await httpClient.GetFromJsonAsync<Review>($"api/review/{id}");
+    {
+        var response = await httpClient.GetAsync($"api/review/{id}");
+        await response.HandleError();
+
+        return await response.Content.ReadFromJsonAsync<Review>();
+    }
 
 }
 

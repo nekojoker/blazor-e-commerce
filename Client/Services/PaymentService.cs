@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Net.Http.Json;
-using BlazorEC.Client.State;
+using BlazorEC.Client.Extensions;
 using BlazorEC.Shared.Entities;
-using Blazored.LocalStorage;
 
 namespace BlazorEC.Client.Services;
 
@@ -20,8 +19,10 @@ public class PaymentService : IPaymentService
 
     public async ValueTask<string> GetCheckoutUrlAsync(List<Cart> carts)
     {
-        var response = await httpClient.PostAsJsonAsync<List<Cart>>("api/payments/create-checkout-session", carts);
-        return await response.Content.ReadAsStringAsync();
+        var response = await httpClient.PostAsJsonAsync("api/payment/create-checkout-session", carts);
+        await response.HandleError();
+
+        return await response.Content.ReadFromJsonAsync<string>();
     }
 }
 

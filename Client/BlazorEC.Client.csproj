@@ -32,6 +32,8 @@
     <None Remove="Enum\" />
     <None Remove="State\" />
     <None Remove="EventArgs\" />
+    <None Remove="Extensions\" />
+    <None Remove="Shared\Errors\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
@@ -40,8 +42,11 @@
     <Folder Include="wwwroot\js\" />
     <Folder Include="State\" />
     <Folder Include="EventArgs\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Shared\Errors\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\js\" />
+    <Content Remove="Shared\ErrorPage.razor" />
   </ItemGroup>
 </Project>

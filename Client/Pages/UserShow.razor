@@ -39,14 +39,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            shopUser = await UserService.GetMeAsync();
-        }
-        catch (AccessTokenNotAvailableException e)
-        {
-            e.Redirect();
-        }
+        shopUser = await UserService.GetMeAsync();
     }
 
 }

@@ -42,9 +42,6 @@
     <None Remove="Microsoft.EntityFrameworkCore.Design" />
     <None Remove="Stripe.net" />
     <None Remove="Swashbuckle.AspNetCore" />
-    <None Remove="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" />
-    <None Remove="Microsoft.AspNetCore.Authentication" />
-    <None Remove="NSwag.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />

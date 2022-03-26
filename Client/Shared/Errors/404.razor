@@ -1,0 +1,14 @@
+﻿<h2>404</h2>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <p>@Message</p>
+}
+
+<p>このページはすでに削除されているか、URLが間違っている可能性があります。</p>
+
+@code{
+    [Parameter]
+    public string Message { get; set; }
+
+}

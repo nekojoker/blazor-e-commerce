@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http.Json;
+using BlazorEC.Client.Extensions;
 using BlazorEC.Shared.Entities;
 
 namespace BlazorEC.Client.Services;
@@ -7,7 +8,6 @@ namespace BlazorEC.Client.Services;
 public interface IOrderService
 {
     ValueTask<List<Order>> GetAllAsync();
-    ValueTask<Order> GetAsync(int orderId);
 }
 
 public class OrderService : IOrderService
@@ -18,9 +18,11 @@ public class OrderService : IOrderService
         => this.httpClient = httpClient;
 
     public async ValueTask<List<Order>> GetAllAsync()
-        => await httpClient.GetFromJsonAsync<List<Order>>("api/order");
+    {
+        var response = await httpClient.GetAsync("api/order");
+        await response.HandleError();
 
-    public async ValueTask<Order> GetAsync(int orderId)
-        => await httpClient.GetFromJsonAsync<Order>($"api/order/{orderId}");
+        return await response.Content.ReadFromJsonAsync<List<Order>>();
+    }
 }
 

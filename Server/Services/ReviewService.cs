@@ -62,12 +62,19 @@ public class ReviewService : IReviewService
         using (context)
         {
             var dbReview = await context.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id);
+            if (dbReview is null)
+                return StatusCodes.Status404NotFound;
+
+            if (dbReview.UserId != userId)
+                return StatusCodes.Status400BadRequest;
+
             dbReview.Rating = review.Rating;
             dbReview.Title = review.Title;
             dbReview.ReviewText = review.ReviewText;
             dbReview.UpdateDate = DateTime.Now;
+            await context.SaveChangesAsync();
 
-            return await context.SaveChangesAsync();
+            return StatusCodes.Status204NoContent;
         }
     }
 
@@ -76,9 +83,16 @@ public class ReviewService : IReviewService
         using (context)
         {
             var dbReview = await context.Reviews.FirstOrDefaultAsync(x => x.Id == id);
-            context.Reviews.Remove(dbReview);
+            if(dbReview is null)
+                return StatusCodes.Status404NotFound;
 
-            return await context.SaveChangesAsync();
+            if (dbReview.UserId != userId)
+                return StatusCodes.Status400BadRequest;
+
+            context.Reviews.Remove(dbReview);
+            await context.SaveChangesAsync();
+
+            return StatusCodes.Status204NoContent;
         }
     }
 }
