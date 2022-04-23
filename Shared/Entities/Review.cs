@@ -17,11 +17,13 @@ public class Review
     [Range(1, 5)]
     public int Rating { get; set; } = 5;
 
-    [Required]
+    [Required(ErrorMessage = "タイトルは必須項目です。")]
+    [MaxLength(50, ErrorMessage = "タイトルは50文字までです。")]
     [Column(TypeName = "nvarchar(50)")]
     public string Title { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "レビュー本文は必須項目です。")]
+    [MaxLength(1000, ErrorMessage = "レビュー本文は1000文字までです。")]
     [Column(TypeName = "nvarchar(1000)")]
     public string ReviewText { get; set; }
 

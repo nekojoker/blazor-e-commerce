@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http.Json;
+using BlazorEC.Client.Extensions;
 using BlazorEC.Shared.Entities;
 
 namespace BlazorEC.Client.Services;
@@ -7,7 +8,7 @@ namespace BlazorEC.Client.Services;
 public interface IUserService
 {
     ValueTask<ShopUser> GetMeAsync();
-    ValueTask<HttpResponseMessage> PutAsync(ShopUser user);
+    ValueTask PutAsync(ShopUser user);
 }
 
 public class UserService : IUserService
@@ -18,9 +19,17 @@ public class UserService : IUserService
         => this.httpClient = httpClient;
 
     public async ValueTask<ShopUser> GetMeAsync()
-        => await httpClient.GetFromJsonAsync<ShopUser>("api/user/me");
+    {
+        var response = await httpClient.GetAsync("api/user/me");
+        await response.HandleError();
 
-    public async ValueTask<HttpResponseMessage> PutAsync(ShopUser user)
-        => await httpClient.PutAsJsonAsync($"api/user", user);
+        return await response.Content.ReadFromJsonAsync<ShopUser>();
+    }
+
+    public async ValueTask PutAsync(ShopUser user)
+    {
+        var response = await httpClient.PutAsJsonAsync($"api/user", user);
+        await response.HandleError();
+    }
 }
 

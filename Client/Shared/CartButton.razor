@@ -3,7 +3,7 @@
 @inject ICartState CartState
 @implements IDisposable
 
-<button class="btn btn-dark ml-5" @onclick="OnClicked">
+<button class="btn btn-dark ml-5" @onclick="OnClicked" type="button">
     <i class="oi oi-cart"></i>
     <span class="badge rounded-pill bg-warning">@cartCount</span>
 </button>
@@ -23,7 +23,7 @@
     private async ValueTask<int> GetCartCount()
     {
         var carts = await CartService.GetAllAsync();
-        return carts.Count();
+        return carts.Sum(x => x.Quantity);
     }
 
     private void OnCountChanged(int count)
@@ -34,5 +34,5 @@
 
     public void Dispose()
         => CartState.OnQuantityChanged -= OnCountChanged;
-    
+
 }

@@ -1,4 +1,9 @@
 ﻿using System;
+using BlazorEC.Server.Data;
+using BlazorEC.Server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace BlazorEC.Server.Extensions;
@@ -54,6 +59,55 @@ public static class ServiceCollectionExtension
             });
         });
 
+        return services;
+    }
+
+    public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+    {
+        string metadataAddress = $"{configuration["AzureAdB2C:Instance"]}" +
+                                    $"{configuration["AzureAdB2C:Domain"]}" +
+                                    $"/{configuration["AzureAdB2C:SignUpSignInPolicyId"]}" +
+                                    $"/v2.0/.well-known/openid-configuration";
+
+        services.AddAuthentication()
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.MetadataAddress = metadataAddress;
+                options.Audience = configuration["AzureAdB2C:ClientId"];
+            })
+            .AddJwtBearer("Swagger", options =>
+            {
+                options.MetadataAddress = metadataAddress;
+                options.Audience = configuration["Swagger:ClientId"];
+            });
+
+        services.AddAuthorization(options =>
+        {
+            options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, "Swagger")
+                .Build();
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        return services;
+    }
+
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDbContextFactory<DataContext>(options =>
+        {
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        });
         return services;
     }
 }

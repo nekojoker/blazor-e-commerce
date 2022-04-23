@@ -20,8 +20,6 @@ public class UserService : IUserService
 
     public UserService(IConfiguration configuration)
     {
-        var scopes = new[] { "https://graph.microsoft.com/.default" };
-
         var options = new TokenCredentialOptions
         {
             AuthorityHost = AzureAuthorityHosts.AzurePublicCloud
@@ -33,7 +31,7 @@ public class UserService : IUserService
             configuration["AzureAdB2C:ClientSecret"],
             options);
 
-        graphClient = new GraphServiceClient(clientSecretCredential, scopes);
+        graphClient = new GraphServiceClient(clientSecretCredential);
     }
 
     public async ValueTask<ShopUser> GetAsync(string userId)

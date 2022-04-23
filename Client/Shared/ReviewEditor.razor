@@ -89,7 +89,7 @@ else
         await JSRuntime.InvokeVoidAsync("showInfoToast", "レビューを修正しました。");
     }
 
-    private async Task<bool> IsMyReview(Guid reviewUserId)
+    private async ValueTask<bool> IsMyReview(Guid reviewUserId)
     {
         var authState = await AuthProvider.GetAuthenticationStateAsync();
         if (Guid.TryParse(authState.User.Claims.FirstOrDefault(x => x.Type == "oid")?.Value, out Guid value))

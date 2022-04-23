@@ -1,48 +1,10 @@
-using BlazorEC.Server.Data;
-using BlazorEC.Server.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using BlazorEC.Server.Extensions;
-using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContextFactory<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
-string metadataAddress = $"{builder.Configuration["AzureAdB2C:Instance"]}" +
-                         $"{builder.Configuration["AzureAdB2C:Domain"]}" +
-                         $"/{builder.Configuration["AzureAdB2C:SignUpSignInPolicyId"]}" +
-                         $"/v2.0/.well-known/openid-configuration";
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-    {
-        options.MetadataAddress = metadataAddress;
-        options.Audience = builder.Configuration["AzureAdB2C:ClientId"];
-    })
-    .AddJwtBearer("Swagger", options =>
-    {
-        options.MetadataAddress = metadataAddress;
-        options.Audience = builder.Configuration["Swagger:ClientId"];
-    });
-
-builder.Services.AddAuthorization(options =>
-{
-    options.DefaultPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, "Swagger")
-        .Build();
-});
-
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddServices();
+builder.Services.AddAuth(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

@@ -11,6 +11,6 @@
     protected override async Task OnInitializedAsync()
     {
         await CartService.RemoveAllAsync();
-        NavigationManager.NavigateTo("payment-thanks", true);
+        NavigationManager.NavigateTo("payment-thanks", forceLoad: true);
     }
 }

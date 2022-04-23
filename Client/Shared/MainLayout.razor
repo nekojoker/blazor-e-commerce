@@ -16,14 +16,7 @@
         <ErrorBoundary @ref="errorBoundary">
             <ChildContent>
                 <article class="content px-4">
-                    @try
-                    {
-                        @Body
-                    }
-                    catch (AccessTokenNotAvailableException ex)
-                    {
-                        ex.Redirect();
-                    }
+                    @Body
                 </article>
             </ChildContent>
             <ErrorContent>

@@ -22,6 +22,12 @@
 
     protected override void OnParametersSet()
     {
+        if (Exception is AccessTokenNotAvailableException ex)
+        {
+            ex.Redirect();
+            return;
+        }
+
         if (Exception.Data.Count > 0)
         {
             statusCode = Exception.Data.Keys.Cast<int>().FirstOrDefault();

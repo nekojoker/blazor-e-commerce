@@ -38,8 +38,11 @@ public class CartService : ICartService
         var storage = storages.Find(x => x.ProductId == cart.ProductId);
         if (storage is null)
         {
-            storages.Add(cart);
-            await storageService.SetItemAsync(CART, storages);
+            if(type is not CartStorageType.Remove)
+            {
+                storages.Add(cart);
+                await storageService.SetItemAsync(CART, storages);
+            }
             await cartState.UpdateAsync();
             return;
         }

@@ -49,7 +49,7 @@ else
                     <h5 class="card-subtitle mb-2">合計 @(CalcTotalQuantity()) 個の商品（税込）</h5>
                     <h4 class="card-title text-danger">￥@CalcTotalAmount().ToString("#,0")</h4>
                     <div class="d-grid gap-2 mx-auto">
-                        <button class="btn btn-warning" @onclick="GoToPayment" disabled="@buttonDisabled">レジに進む</button>
+                        <button class="btn btn-warning" @onclick="@(() => GoToPayment())" disabled="@buttonDisabled">レジに進む</button>
                     </div>
                 </div>
             </div>
@@ -73,14 +73,14 @@ else
     private int CalcTotalQuantity()
         => carts.Sum(x => x.Quantity);
 
-    private async void RemoveCart(Cart cart)
+    private async Task RemoveCart(Cart cart)
     {
         await CartService.RemoveAsync(cart.Product.Id);
         carts = await CartService.GetAllAsync();
         StateHasChanged();
     }
 
-    private async void GoToPayment()
+    private async Task GoToPayment()
     {
         try
         {
@@ -88,10 +88,6 @@ else
 
             var checkoutUrl = await PaymentService.GetCheckoutUrlAsync(carts);
             NavigationManager.NavigateTo(checkoutUrl);
-        }
-        catch (AccessTokenNotAvailableException e)
-        {
-            e.Redirect();
         }
         finally
         {

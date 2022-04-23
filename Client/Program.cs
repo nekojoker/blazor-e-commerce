@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BlazorEC.Client;
-using BlazorEC.Client.Services;
 using BlazorEC.Client.Util;
 using Blazored.LocalStorage;
-using BlazorEC.Client.State;
+using BlazorEC.Client.Extensions;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -19,14 +18,7 @@ builder.Services.AddHttpClient<PublicHttpClient>("BlazorEC.AnonymousAPI", client
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("BlazorEC.ServerAPI"));
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPublicProductService, PublicProductService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<ICartState, CartState>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IPublicReviewService, PublicReviewService>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddServices();
 
 builder.Services.AddMsalAuthentication(options =>
 {

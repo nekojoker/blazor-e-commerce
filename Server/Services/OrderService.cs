@@ -10,7 +10,6 @@ namespace BlazorEC.Server.Services;
 public interface IOrderService
 {
     ValueTask<List<Order>> GetAllAsync(Guid userId);
-    ValueTask<Order> GetAsync(int orderId, Guid userId);
     ValueTask InsertAsync(Stripe.Checkout.Session session);
 }
 
@@ -20,17 +19,6 @@ public class OrderService : IOrderService
 
     public OrderService(IDbContextFactory<DataContext> factory)
         => context = factory.CreateDbContext();
-
-    public async ValueTask<Order> GetAsync(int orderId, Guid userId)
-    {
-        using (context)
-        {
-            return await context.Orders
-                .Include(x => x.OrderParticulars)
-                .ThenInclude(p => p.Product)
-                .FirstOrDefaultAsync(x => x.Id == orderId && x.UserId == userId);
-        }
-    }
 
     public async ValueTask<List<Order>> GetAllAsync(Guid userId)
     {
