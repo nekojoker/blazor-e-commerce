@@ -2,7 +2,12 @@
  
 本リポジトリは、Blazor で作成した E コマースサイトのサンプルプログラムです。  
 動作イメージは以下の動画で確認できます。  
-https://youtu.be/g3i_23BQEI4
+https://youtu.be/MPsrhUBdK3c
+
+## 解説書
+
+本リポジトリの詳しい解説書を執筆しました。  
+https://nekojoker.booth.pm/items/3813171
 
 ## 実装されている機能
 
@@ -33,19 +38,17 @@ https://youtu.be/g3i_23BQEI4
 - `Server/appsettings.json` 
 
 `{your-value}` としている部分に実際の値を埋めてください。 
-何の値を設定すべきか不明な場合は、公式ドキュメントもあわせて参照してください。
+何の値を設定すべきか不明な場合は、公式ドキュメントや解説書を参照してください。
 
 ## 実行
 
 以下のコマンドを使用してデータベースを更新したあと、デバッグ実行します。
 
 ```
-// dotnet コマンドをインストールしていない人のみ
-dotnet tool install --global dotnet-ef
-
 // データベースの更新
 dotnet ef database update
 ```
+
 ## Swagger の起動
 
 デバッグ実行後、以下の URL から Swagger を起動できます。
