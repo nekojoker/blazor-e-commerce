@@ -45,7 +45,6 @@ https://nekojoker.booth.pm/items/3813171
 以下のコマンドを使用してデータベースを更新したあと、デバッグ実行します。
 
 ```
-// データベースの更新
 dotnet ef database update
 ```
 
