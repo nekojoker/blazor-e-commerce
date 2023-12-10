@@ -1,5 +1,4 @@
-﻿using System;
-namespace BlazorEC.Shared.Entities;
+﻿namespace BlazorEC.Shared.Entities;
 
 public class Cart
 {

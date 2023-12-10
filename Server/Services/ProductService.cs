@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Linq;
-using BlazorEC.Server.Data;
+﻿using BlazorEC.Server.Data;
 using BlazorEC.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 

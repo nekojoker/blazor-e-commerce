@@ -1,5 +1,4 @@
-﻿using System;
-using BlazorEC.Shared.Entities;
+﻿using BlazorEC.Shared.Entities;
 using Stripe.Checkout;
 
 namespace BlazorEC.Server.Services;

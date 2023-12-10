@@ -1,5 +1,4 @@
-﻿using System;
-namespace BlazorEC.Client.Util;
+﻿namespace BlazorEC.Client.Util;
 
 public class PublicHttpClient
 {

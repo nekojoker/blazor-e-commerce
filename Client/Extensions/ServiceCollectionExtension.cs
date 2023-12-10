@@ -1,5 +1,4 @@
-﻿using System;
-using BlazorEC.Client.Services;
+﻿using BlazorEC.Client.Services;
 using BlazorEC.Client.State;
 
 namespace BlazorEC.Client.Extensions;
