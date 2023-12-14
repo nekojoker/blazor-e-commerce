@@ -1,5 +1,4 @@
-﻿using System;
-using BlazorEC.Shared.Entities;
+﻿using BlazorEC.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorEC.Server.Data;

@@ -1,6 +1,4 @@
-﻿using System;
-using BlazorEC.Client.Services;
-using BlazorEC.Shared.Entities;
+﻿using BlazorEC.Shared.Entities;
 using Blazored.LocalStorage;
 
 namespace BlazorEC.Client.State;

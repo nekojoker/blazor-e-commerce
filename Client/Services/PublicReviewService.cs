@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using BlazorEC.Client.Extensions;
 using BlazorEC.Client.Util;
 using BlazorEC.Shared.Entities;

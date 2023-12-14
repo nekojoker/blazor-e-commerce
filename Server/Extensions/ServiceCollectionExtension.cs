@@ -1,5 +1,4 @@
-﻿using System;
-using BlazorEC.Server.Data;
+﻿using BlazorEC.Server.Data;
 using BlazorEC.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

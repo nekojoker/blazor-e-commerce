@@ -1,10 +1,8 @@
-﻿
-using System;
-using System.Linq;
-using Azure.Identity;
+﻿using Azure.Identity;
 using BlazorEC.Server.Extensions;
 using BlazorEC.Shared.Entities;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 
 namespace BlazorEC.Server.Services;
 
@@ -36,7 +34,7 @@ public class UserService : IUserService
 
     public async ValueTask<ShopUser> GetAsync(string userId)
     {
-        var user = await graphClient.Users[userId].Request().GetAsync();
+        var user = await graphClient.Users[userId].GetAsync();
         return user.ToShopUser();
     }
 
@@ -48,7 +46,7 @@ public class UserService : IUserService
             MobilePhone = shopUser.MobilePhone
         };
 
-        await graphClient.Users[userId].Request().UpdateAsync(user);
+        await graphClient.Users[userId].PatchAsync(user);
 
         return StatusCodes.Status204NoContent;
     }

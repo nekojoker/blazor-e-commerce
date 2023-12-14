@@ -1,5 +1,4 @@
-﻿using System;
-namespace BlazorEC.Client.EventArgs;
+﻿namespace BlazorEC.Client.EventArgs;
 
 public class ReviewAverageCalculatedEventArgs
 {

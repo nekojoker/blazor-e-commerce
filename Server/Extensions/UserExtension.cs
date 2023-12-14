@@ -1,6 +1,5 @@
-﻿using System;
-using BlazorEC.Shared.Entities;
-using Microsoft.Graph;
+﻿using BlazorEC.Shared.Entities;
+using Microsoft.Graph.Models;
 
 namespace BlazorEC.Server.Extensions;
 
